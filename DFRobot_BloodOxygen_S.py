@@ -12,7 +12,7 @@
 
 import serial
 import time
-import smbus
+from smbus2 import SMBus
 import os
 import math
 import RPi.GPIO as GPIO
@@ -44,7 +44,7 @@ class DFRobot_BloodOxygen_S(DFRobot_RTU):
     
   def __init__(self ,bus ,Baud):
     if bus != 0:
-      self.i2cbus = smbus.SMBus(bus)
+      self.i2cbus = SMBus(bus)
       self.__uart_i2c = I2C_MODE
     else:
       super(DFRobot_BloodOxygen_S, self).__init__(Baud, 8, 'N', 1)
