@@ -36,14 +36,14 @@ def authenticate():
 
     print("Authenticating...")
 
-    if not CONFIG['email'] or not CONFIG['password']:
-        print("Email or password not set in config.json")
+    if not CONFIG['login'] or not CONFIG['password']:
+        print("login or password not set in config.json")
         return False
     
     if not CONFIG['configured']:
         print("Registering device...")
         data = {
-            "email": CONFIG['email'],
+            "login": CONFIG['login'],
             "password": CONFIG['password'],
             "name": CONFIG['name']
         }
@@ -68,7 +68,7 @@ def authenticate():
             return False
 
     data = {
-        "email": CONFIG['email'],
+        "login": CONFIG['login'],
         "password": CONFIG['password']
     }
 
@@ -95,7 +95,7 @@ def send_data(temperature: float, ambientTemperature: int, heart_rate: int, spo2
         "pulseRate": heart_rate,
         "spo2": spo2,
     })
-    
+
     data = {
         "temperature": aes.encrypt(str(temperature), KEY, IV),
         "pulseRate": aes.encrypt(str(heart_rate), KEY, IV),
