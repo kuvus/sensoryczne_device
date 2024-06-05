@@ -30,7 +30,42 @@ IV = None
 # API functions
 
 def authenticate():
+    global TOKEN
+    global KEY
+    global IV
+
     print("Authenticating...")
+
+    if not CONFIG['email'] or not CONFIG['password']:
+        print("Email or password not set in config.json")
+        return False
+    
+    if not CONFIG['configured']:
+        print("Registering device...")
+        data = {
+            "email": CONFIG['email'],
+            "password": CONFIG['password'],
+            "name": CONFIG['name']
+        }
+
+        response = requests.post(API_URL + "/Device/register", json=data)
+
+        if response.status_code == 200:
+            print("Device registered")
+            CONFIG['configured'] = True
+            with open('config.json', 'w') as f:
+                json.dump(CONFIG, f, indent=4)
+
+            json_data = response.json()
+
+            TOKEN = json_data['token']
+            KEY = json_data['key']
+            IV = json_data['iv']
+
+            return True
+        else:
+            print("Device registration failed")
+            return False
 
     data = {
         "email": CONFIG['email'],
@@ -42,11 +77,7 @@ def authenticate():
     if response.status_code == 200:
         print("Authenticated")
 
-
         json_data = response.json()
-        global TOKEN
-        global KEY
-        global IV
 
         TOKEN = json_data['token']
         KEY = json_data['key']
@@ -59,6 +90,12 @@ def authenticate():
 
 
 def send_data(temperature: float, ambientTemperature: int, heart_rate: int, spo2: int):
+    print({
+        "temperature": temperature,
+        "pulseRate": heart_rate,
+        "spo2": spo2,
+    })
+    
     data = {
         "temperature": aes.encrypt(str(temperature), KEY, IV),
         "pulseRate": aes.encrypt(str(heart_rate), KEY, IV),
