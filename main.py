@@ -146,7 +146,8 @@ def loop():
 
 if __name__ == "__main__":
     atexit.register(end_program)
-    authenticate()
+    if not authenticate():
+        sys.exit(1)
     setup() 
     while True:
         loop()
